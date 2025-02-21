@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public enum GameState
+public enum GameStateEnum
 {
     Playing,
     Won,
@@ -11,6 +12,10 @@ public class BasketballGameManager : MonoBehaviour
 {
     public static BasketballGameManager Instance;
 
+    public event Action<int> ScoreUpdated;
+    public event Action<int> RemainingBallCountUpdated;
+    public event Action<GameStateEnum> GameStateUpdated;
+
     public Transform HoopTriggerTransform => _hoopTriggerTransform;
     [SerializeField] private Transform _hoopTriggerTransform;
 
@@ -20,29 +25,34 @@ public class BasketballGameManager : MonoBehaviour
     public int ScoreNeededToWin => _scoreNeededToWin;
     [SerializeField] private int _scoreNeededToWin = 0;
 
-    public int RemainingBallCount => _remainingBallCount;
     private int _remainingBallCount = 0;
-
-    public int Score => _score;
     private int _score = 0;
-
-    public GameState GameState => _gameState;
-    private GameState _gameState;
+    private GameStateEnum _gameState;
 
     public void IncrementScore()
     {
+        if (_gameState != GameStateEnum.Playing)
+        {
+            return;
+        }
+
         _score += 1;
+        ScoreUpdated?.Invoke(_score);
+
         DecrementRemainingBallCount();
     }
 
     public void DecrementRemainingBallCount()
     {
-        _remainingBallCount -= 1;
-
-        if (_gameState == GameState.Playing)
+        if (_gameState != GameStateEnum.Playing)
         {
-            CheckWinLoseConditions();
+            return;
         }
+
+        _remainingBallCount -= 1;
+        RemainingBallCountUpdated?.Invoke(_remainingBallCount);
+
+        CheckWinLoseConditions();
     }
 
     private void Awake()
@@ -63,20 +73,20 @@ public class BasketballGameManager : MonoBehaviour
     {
         _score = 0;
         _remainingBallCount = _totalBallCount;
-        _gameState = GameState.Playing;
+        _gameState = GameStateEnum.Playing;
     }
 
     private void CheckWinLoseConditions()
     {
         if (_score >= _scoreNeededToWin)
         {
-            Debug.Log("You won!");
-            _gameState = GameState.Won;
+            _gameState = GameStateEnum.Won;
+            GameStateUpdated?.Invoke(_gameState);
         }
-        else if (_remainingBallCount == 0)
+        else if (_score + _remainingBallCount < _scoreNeededToWin)
         {
-            Debug.Log("You lost!");
-            _gameState = GameState.Lost;
+            _gameState = GameStateEnum.Lost;
+            GameStateUpdated?.Invoke(_gameState);
         }
     }
 }
