@@ -50,13 +50,23 @@ public class BasketballGameUIPresenter : MonoBehaviour
                 _resetButton.SetActive(false);
                 break;
             case GameStateEnum.Won:
-                _winText.gameObject.SetActive(true);
-                _resetButton.SetActive(true);
+                Invoke(nameof(ShowWinUI), 2f);
                 break;
             case GameStateEnum.Lost:
-                _loseText.gameObject.SetActive(true);
-                _resetButton.SetActive(true);
+                Invoke(nameof(ShowLoseUI), 2f);
                 break;
         }
+    }
+
+    private void ShowWinUI()
+    {
+        _winText.gameObject.SetActive(true);
+        _resetButton.SetActive(true);
+    }
+
+    private void ShowLoseUI()
+    {
+        _loseText.gameObject.SetActive(true);
+        _resetButton.SetActive(true);
     }
 }

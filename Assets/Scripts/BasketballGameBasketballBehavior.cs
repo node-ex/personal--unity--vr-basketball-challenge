@@ -16,7 +16,13 @@ public class BasketballGameBasketballBehavior : MonoBehaviour
 
     public void SetHasScored()
     {
+        if (_hasScored)
+        {
+            return;
+        }
+
         _hasScored = true;
+        AudioManager.Instance.Play("Scored");
         DisableBallAfterDelay();
     }
 
@@ -74,6 +80,7 @@ public class BasketballGameBasketballBehavior : MonoBehaviour
         if (isYPositionDecreasing && isLowerThanHoop)
         {
             BasketballGameManager.Instance.DecrementRemainingBallCount();
+            AudioManager.Instance.Play("Missed");
             DisableBallAfterDelay();
         }
 

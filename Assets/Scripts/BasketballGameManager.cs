@@ -27,8 +27,6 @@ public class BasketballGameManager : MonoBehaviour
     public int TotalBallCount => _totalBallCount;
     private int _totalBallCount = 0;
 
-    // private Vector3[] _basketballRootPositions;
-    // private Quaternion[] _basketballRootRotations;
     private int _remainingBallCount = 0;
     private int _score = 0;
     private GameStateEnum _gameState;
@@ -79,7 +77,6 @@ public class BasketballGameManager : MonoBehaviour
 
     private void Start()
     {
-        // StoreBasketballRootTransforms();
         ResetGame();
     }
 
@@ -88,10 +85,12 @@ public class BasketballGameManager : MonoBehaviour
         if (_score >= _scoreNeededToWin)
         {
             SetGameState(GameStateEnum.Won);
+            Invoke(nameof(PlayWonSound), 2f);
         }
         else if (_score + _remainingBallCount < _scoreNeededToWin)
         {
             SetGameState(GameStateEnum.Lost);
+            Invoke(nameof(PlayLostSound), 2f);
         }
     }
 
@@ -124,19 +123,17 @@ public class BasketballGameManager : MonoBehaviour
         for (int i = 0; i < _basketballRoots.Length; i++)
         {
             _basketballRoots[i].SetActive(true);
-            // _basketballRoots[i].transform.SetPositionAndRotation(_basketballRootPositions[i], _basketballRootRotations[i]);
             _basketballRoots[i].SendMessage("Reset");
         }
     }
 
-    // private void StoreBasketballRootTransforms()
-    // {
-    //     _basketballRootPositions = new Vector3[_basketballRoots.Length];
-    //     _basketballRootRotations = new Quaternion[_basketballRoots.Length];
-    //     for (int i = 0; i < _basketballRoots.Length; i++)
-    //     {
-    //         _basketballRootPositions[i] = _basketballRoots[i].transform.position;
-    //         _basketballRootRotations[i] = _basketballRoots[i].transform.rotation;
-    //     }
-    // }
+    private void PlayWonSound()
+    {
+        AudioManager.Instance.Play("Won");
+    }
+
+    private void PlayLostSound()
+    {
+        AudioManager.Instance.Play("Lost");
+    }
 }
