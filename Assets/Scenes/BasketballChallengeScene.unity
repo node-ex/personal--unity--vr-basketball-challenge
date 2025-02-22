@@ -1906,34 +1906,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SoundConfigs:
+  - name: Ambient
+    clip: {fileID: 8300000, guid: 49ecba1370cf5274ca979c445807c0c7, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+    playOnAwake: 1
+    source: {fileID: 995998805}
   - name: Missed
     clip: {fileID: 8300000, guid: fa25e8d0dff305941a981ec55d314177, type: 3}
-    volume: 1
+    volume: 0.7
     pitch: 1
     loop: 0
     playOnAwake: 0
-    source: {fileID: 995998805}
+    source: {fileID: 0}
   - name: Scored
     clip: {fileID: 8300000, guid: 613f63beef8198f43bffe68e8bb984df, type: 3}
-    volume: 1
+    volume: 0.7
     pitch: 1
     loop: 0
     playOnAwake: 0
-    source: {fileID: 995998805}
+    source: {fileID: 0}
   - name: Lost
     clip: {fileID: 8300000, guid: 6dad7c40356202f4c96bb4a717ecdc22, type: 3}
-    volume: 1
+    volume: 0.7
     pitch: 1
     loop: 0
     playOnAwake: 0
-    source: {fileID: 995998805}
+    source: {fileID: 0}
   - name: Won
     clip: {fileID: 8300000, guid: ed5a8eab05003fd48ac6be36d561633c, type: 3}
-    volume: 1
+    volume: 0.7
     pitch: 1
     loop: 0
     playOnAwake: 0
-    source: {fileID: 995998805}
+    source: {fileID: 0}
 --- !u!1 &691278139
 GameObject:
   m_ObjectHideFlags: 0
@@ -3179,7 +3186,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 3
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
