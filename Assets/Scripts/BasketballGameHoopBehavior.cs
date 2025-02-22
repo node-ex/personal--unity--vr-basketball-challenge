@@ -6,11 +6,11 @@ public class BasketballGameHoopBehavior : MonoBehaviour
     {
         if (other.CompareTag("Basketball"))
         {
-            var basketball = other.GetComponentInParent<BasketballGameBasketballBehavior>();
-            if (basketball != null)
+            var basketballComponent = other.GetComponentInParent<BasketballGameBasketballBehavior>();
+            if (basketballComponent != null)
             {
                 BasketballGameManager.Instance.IncrementScore();
-                basketball.SetHasScored();
+                basketballComponent.SetHasScored();
             }
             else
             {

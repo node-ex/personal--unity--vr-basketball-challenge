@@ -6,25 +6,39 @@ public class BasketballGameBasketballBehavior : MonoBehaviour
     [SerializeField] float _yPositionThresholdBuffer = 0.5f;
 
     private XRGrabInteractable _grabInteractable;
+    private Rigidbody _rigidbody;
+    private Vector3? _initialPosition;
+    private Quaternion? _initialRotation;
     private bool _wasGrabbed;
-    private bool _isWaitingForDestruction;
+    private bool _isWaitingForDisabling;
     private bool _hasScored;
     private float _lastYPosition;
 
     public void SetHasScored()
     {
         _hasScored = true;
-        DestroyBall();
+        DisableBallAfterDelay();
+    }
+
+    public void Reset()
+    {
+        transform.SetPositionAndRotation(_initialPosition.Value, _initialRotation.Value);
+        _rigidbody.linearVelocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
+
+        _hasScored = false;
+        _wasGrabbed = false;
+        _isWaitingForDisabling = false;
+        _lastYPosition = transform.position.y;
     }
 
     private void Awake()
     {
         _grabInteractable = GetComponent<XRGrabInteractable>();
+        _rigidbody = GetComponent<Rigidbody>();
 
-        _hasScored = false;
-        _wasGrabbed = false;
-        _isWaitingForDestruction = false;
-        _lastYPosition = _grabInteractable.transform.position.y;
+        StoreInitialTransform();
+        Reset();
     }
 
     private void Update()
@@ -34,7 +48,7 @@ public class BasketballGameBasketballBehavior : MonoBehaviour
 
     private void CheckFailureCondition()
     {
-        if (_hasScored || _isWaitingForDestruction)
+        if (_hasScored || _isWaitingForDisabling)
         {
             return;
         }
@@ -42,33 +56,49 @@ public class BasketballGameBasketballBehavior : MonoBehaviour
         if (_grabInteractable.isSelected)
         {
             _wasGrabbed = true;
-            _lastYPosition = _grabInteractable.transform.position.y;
+            _lastYPosition = transform.position.y;
             return;
         }
 
         if (!_wasGrabbed)
         {
-            _lastYPosition = _grabInteractable.transform.position.y;
+            _lastYPosition = transform.position.y;
             return;
         }
 
         float yPositionThreshold = BasketballGameManager.Instance.HoopTriggerTransform.position.y - _yPositionThresholdBuffer;
 
-        bool isYPositionDecreasing = _grabInteractable.transform.position.y < _lastYPosition;
-        bool isLowerThanHoop = _grabInteractable.transform.position.y < yPositionThreshold;
+        bool isYPositionDecreasing = transform.position.y < _lastYPosition;
+        bool isLowerThanHoop = transform.position.y < yPositionThreshold;
 
         if (isYPositionDecreasing && isLowerThanHoop)
         {
             BasketballGameManager.Instance.DecrementRemainingBallCount();
-            DestroyBall();
+            DisableBallAfterDelay();
         }
 
-        _lastYPosition = _grabInteractable.transform.position.y;
+        _lastYPosition = transform.position.y;
     }
 
-    private void DestroyBall()
+    private void DisableBallAfterDelay()
     {
-        _isWaitingForDestruction = true;
-        Destroy(gameObject, 1f);
+        _isWaitingForDisabling = true;
+        Invoke(nameof(DisableBall), 1f);
+    }
+
+    private void DisableBall()
+    {
+        gameObject.SetActive(false);
+    }
+
+    private void StoreInitialTransform()
+    {
+        if (_initialPosition != null && _initialRotation != null)
+        {
+            return;
+        }
+
+        _initialPosition = transform.position;
+        _initialRotation = transform.rotation;
     }
 }
